@@ -152,7 +152,7 @@ class CocoaCB: NSObject {
         CVDisplayLinkCreateWithActiveCGDisplays(&link)
         CVDisplayLinkSetCurrentCGDisplay(link!, screen!.displayID)
         if #available(macOS 10.12, *) {
-            CVDisplayLinkSetOutputHandler(link!) { link, now, out, inFlags, outFlags -> CVReturn in
+            CVDisplayLinkSetOutputHandler(link!) { _, _, _, _, _ -> CVReturn in
                 self.mpv.reportRenderFlip()
                 return kCVReturnSuccess
             }
@@ -221,7 +221,7 @@ class CocoaCB: NSObject {
 
         if visibility && cursorHidden {
             NSCursor.unhide()
-            cursorHidden = false;
+            cursorHidden = false
         } else if !visibility && !cursorHidden {
             NSCursor.hide()
             cursorHidden = true
@@ -301,7 +301,7 @@ class CocoaCB: NSObject {
         if flags.contains(.setModeFlag) {
             let ccb: CocoaCB = MPVHelper.bridge(ptr: userInfo!)
             if ccb.window.screen!.displayID == display {
-                ccb.mpv.sendVerbose("Detected display mode change, updating screen refresh rate");
+                ccb.mpv.sendVerbose("Detected display mode change, updating screen refresh rate")
                 ccb.flagEvents(VO_EVENT_WIN_STATE)
             }
         }
@@ -353,9 +353,7 @@ class CocoaCB: NSObject {
         geo.win.y1 = Int32(r.size.height) - geo.win.y1
         geo.win.y0 = Int32(r.size.height) - geo.win.y0
 
-        let wr = NSMakeRect(CGFloat(geo.win.x0), CGFloat(geo.win.y1),
-                            CGFloat(geo.win.x1 - geo.win.x0),
-                            CGFloat(geo.win.y0 - geo.win.y1))
+        let wr = NSRect(x: CGFloat(geo.win.x0), y: CGFloat(geo.win.y1), width: CGFloat(geo.win.x1 - geo.win.x0), height: CGFloat(geo.win.y0 - geo.win.y1))
         return targetScreen.convertRectFromBacking(wr)
     }
 
@@ -408,7 +406,7 @@ class CocoaCB: NSObject {
         case VOCTRL_SET_UNFS_WINDOW_SIZE:
             let sizeData = data!.assumingMemoryBound(to: Int32.self)
             let size = UnsafeBufferPointer(start: sizeData, count: 2)
-            var rect = NSMakeRect(0, 0, CGFloat(size[0]), CGFloat(size[1]))
+            var rect = NSRect(x: 0, y: 0, width: CGFloat(size[0]), height: CGFloat(size[1]))
             DispatchQueue.main.async {
                 if !ccb.mpv.getBoolProperty("hidpi-window-scale") {
                     rect = ccb.window.currentScreen!.convertRectFromBacking(rect)
@@ -423,7 +421,7 @@ class CocoaCB: NSObject {
         case VOCTRL_GET_DISPLAY_NAMES:
             let opts: mp_vo_opts = vo!.pointee.opts!.pointee
             let dnames = data!.assumingMemoryBound(to: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>?.self)
-            var array: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>? = nil
+            var array: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>?
             var count: Int32 = 0
             let screen = ccb.window != nil ? ccb.window.screen :
                                              ccb.getScreenBy(id: Int(opts.screen_id)) ??

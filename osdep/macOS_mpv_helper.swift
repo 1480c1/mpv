@@ -148,7 +148,7 @@ class MPVHelper: NSObject {
                 mpv_render_param(type: MPV_RENDER_PARAM_SKIP_RENDERING, data: &skip),
                 mpv_render_param()
             ]
-            mpv_render_context_render(mpvRenderContext, &params);
+            mpv_render_context_render(mpvRenderContext, &params)
         } else {
             glClearColor(0, 0, 0, 1)
             glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
