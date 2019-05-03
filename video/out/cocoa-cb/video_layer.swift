@@ -30,8 +30,8 @@ class VideoLayer: CAOpenGLLayer {
     let displayLock = NSLock()
     var needsFlip: Bool = false
     var forceDraw: Bool = false
-    var cglContext: CGLContextObj? = nil
-    var cglPixelFormat: CGLPixelFormatObj? = nil
+    var cglContext: CGLContextObj?
+    var cglPixelFormat: CGLPixelFormatObj?
     var surfaceSize: NSSize?
 
     enum Draw: Int { case normal = 1, atomic, atomicEnd }
@@ -122,9 +122,9 @@ class VideoLayer: CAOpenGLLayer {
     func updateSurfaceSize() {
         var dims: [GLint] = [0, 0, 0, 0]
         glGetIntegerv(GLenum(GL_VIEWPORT), &dims)
-        surfaceSize = NSMakeSize(CGFloat(dims[2]), CGFloat(dims[3]))
+        surfaceSize = NSSize(width: CGFloat(dims[2]), height: CGFloat(dims[3]))
 
-        if NSEqualSizes(surfaceSize!, NSZeroSize) {
+        if NSEqualSizes(surfaceSize!, NSSize.zero) {
             surfaceSize = bounds.size
             surfaceSize!.width *= contentsScale
             surfaceSize!.height *= contentsScale
@@ -244,7 +244,7 @@ class VideoLayer: CAOpenGLLayer {
         if isUpdate && needsFlip {
             CGLSetCurrentContext(cglContext!)
             if mpv.isRenderUpdateFrame() {
-                mpv.drawRender(NSZeroSize, skip: true)
+                mpv.drawRender(NSSize.zero, skip: true)
             }
         }
         displayLock.unlock()
