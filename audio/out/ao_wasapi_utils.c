@@ -42,6 +42,8 @@
 #include "osdep/strnlen.h"
 #include "ao_wasapi.h"
 
+#include <initguid.h>
+
 #ifdef _MSC_VER
 // Define some GUIDs that are defined only in C++ interfaces.
 DEFINE_GUID(KSDATAFORMAT_SPECIFIER_NONE,
